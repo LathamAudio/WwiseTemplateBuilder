@@ -1,5 +1,5 @@
 # WwiseTemplateImporter
-
+![WwiseTemplateImporter](/screenshots/4-PreviewTemplate.png?raw=true "WwiseTemplateImporter")
 **WwiseTemplateImporter** is a Python-based tool for importing audio into a pre-existing Wwise templates for easy and consistent setup of actor-mixer structures and events. The tool allows users to streamline the process of setting up complex Wwise project structures, making it easier to manage consistent audio  across large-scale Wwise projects. 
 
 Do you find yourself building similar structures over and over again in Wwise? Do you work with large amount of content that is set up in a similar way (skins, foley, materials)? Do you work with an awesome team of audio folks who need to focus more time creating great sound design and not waste time setting up large or complex Wwise structures?
