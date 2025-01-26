@@ -32,7 +32,7 @@ Why not just use the template feature built into Wwise when importing audio?
 
 1. Clone the repository:
     
-    `git clone https://github.com/yourusername/WwiseTemplateImporter.git`
+    `git clone https://github.com/LathamAudio/WwiseTemplateImporter.git`
     
 2. Navigate to the project directory:
     
