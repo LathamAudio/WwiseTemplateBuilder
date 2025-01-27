@@ -1,10 +1,10 @@
-# WwiseTemplateImporter
-![WwiseTemplateImporter](/screenshots/4-PreviewTemplate.png?raw=true "WwiseTemplateImporter")
-**WwiseTemplateImporter** is a Python-based tool for importing audio into a pre-existing Wwise templates for easy and consistent setup of actor-mixer structures and events. The tool allows users to streamline the process of setting up complex Wwise project structures, making it easier to manage consistent audio  across large-scale Wwise projects. 
+# WwiseTemplateBuilder
+![WwiseTemplateBuilder](/screenshots/WwiseTemplateBuilder.gif?raw=true "WwiseTemplateBuilder")
+**WwiseTemplateBuilder** is a Python-based tool for importing audio into a pre-existing Wwise templates for easy and consistent setup of actor-mixer structures and events. The tool allows users to streamline the process of setting up complex Wwise project structures, making it easier to manage consistent audio  across large-scale Wwise projects. 
 
 Do you find yourself building similar structures over and over again in Wwise? Do you work with large amount of content that is set up in a similar way (skins, foley, materials)? Do you work with an awesome team of audio folks who need to focus more time creating great sound design and not waste time setting up large or complex Wwise structures?
 
-Instead you can point this tool at a template Wwise structure, a destination location in Wwise, and your folder of files. WwiseTemplateImporter will recreate the actor-mixer/event structure in Wwise, then intelligently scan the file names and place them accordingly in the mixer structure. The tool does rely on the file naming to be the same as the intended template for placement of the audio in the actor-mixer structure.
+Instead you can point this tool at a template Wwise structure, a destination location in Wwise, and your folder of files. WwiseTemplateBuilder will recreate the actor-mixer/event structure in Wwise, then intelligently scan the file names and place them accordingly in the mixer structure. The tool does rely on the file naming to be the same as the intended template for placement of the audio in the actor-mixer structure.
 
 Why not just use the template feature built into Wwise when importing audio?
 - Doesn't require saving files in particular folders, or mapping folders to Wwise objects
@@ -32,11 +32,11 @@ Why not just use the template feature built into Wwise when importing audio?
 
 1. Clone the repository:
     
-    `git clone https://github.com/LathamAudio/WwiseTemplateImporter.git`
+    `git clone https://github.com/LathamAudio/WwiseTemplateBuilder.git`
     
 2. Navigate to the project directory:
     
-    `cd WwiseTemplateImporter`
+    `cd WwiseTemplateBuilder`
     
 3. Install the pss-waapi dependencies:
     
@@ -57,18 +57,18 @@ Ensure WAAPI is enabled in Wwise:
 
 0. **Run the Script**:
     
-    `python WwiseTemplateImporter.py`
+    `python WwiseTemplateBuilder.py`
     
 1. **Choose Source Template**: 
     - In Wwise select the actor-mixer structure that will act as the template
-    - In the WwiseTemplateImporter tool press the 'Select Source' button to set the path to the source template 
+    - In the WwiseTemplateBuilder tool press the 'Select Source' button to set the path to the source template 
     
 2. **Choose Destination Location**: 
     - In Wwise select the actor-mixer object that will act as the destination for the template (typically a folder or work unit)
-    - In the WwiseTemplateImporter tool press the 'Select Destination' button to set the path to the detination location
+    - In the WwiseTemplateBuilder tool press the 'Select Destination' button to set the path to the detination location
     
 3. Select WAV assets
-	- Press the 'Select Folder' button in the WwiseTemplateImporter tool and select the folder of audio assets to import in to the template actor-mixer structure
+	- Press the 'Select Folder' button in the WwiseTemplateBuilder tool and select the folder of audio assets to import in to the template actor-mixer structure
 	
 4.  Set the `TEMPLATE` string
 	- In the 'Find & Replace `TEMPLATE` string' field type the string that will replace `TEMPLATE` in the template name
@@ -92,7 +92,7 @@ Ensure WAAPI is enabled in Wwise:
 
 ## Contributing
 
-Contributions are welcome! If you’d like to help improve WwiseTemplateImporter, please follow these steps:
+Contributions are welcome! If you’d like to help improve WwiseTemplateBuilder, please follow these steps:
 
 1. Fork the repository.
 2. Create a new branch with a descriptive name.

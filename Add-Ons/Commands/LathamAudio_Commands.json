@@ -1,0 +1,15 @@
+{
+	"commands": [
+		{
+			"id": "lathamaudio.wwisetemplatebuilder",
+			"displayName": "WwiseTemplateBuilder",
+			"defaultShortcut": "",
+			"args": "${WwiseProjectAddons}\\Scripts\\WwiseTemplateBuilder\\WwiseTemplateBuilder.pyw",
+			"program": "pythonw",
+			"cwd": "${WwiseProjectAddons}\\Scripts\\WwiseTemplateBuilder",
+			"mainMenu": {
+				"basePath": "Scripts"
+			}
+		}
+	]
+} 

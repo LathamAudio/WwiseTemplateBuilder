@@ -2,7 +2,10 @@
 import tkinter as tk                    # TkInter GUI
 from tkinter import ttk, messagebox     # TTK styling and message box
 import tkinter.filedialog as fd         # file dialog
+import logging                          # Logging
 import os                               # OS paths
+import asyncio                          # Asyncio                        
+import sys                              # System
 import re                               # Regex
 import pss_pywaapi                      # PSS_PYWAAPI
 from waapi import WaapiClient
@@ -597,11 +600,15 @@ def BuildTreeViewStructure(tree, source_object, source_structure):
 
 # ___MAIN_________________________________________________________________________________________________________
 
-# Connect to Wwise API
-result = pss_pywaapi.connect(8081)
+log_file = os.path.join(os.path.dirname(__file__), "debug.log")
+sys.stdout = open(log_file, "w")
+sys.stderr = sys.stdout
 
-# Connect (default URL)
-client = WaapiClient()
+# Connect to Wwise API
+result = pss_pywaapi.connect(8080)
+
+# # Connect (default URL)
+# client = WaapiClient()
 
 
 
@@ -609,16 +616,23 @@ client = WaapiClient()
 
 # Create the main window
 root = tk.Tk()
-root.title("Wwise Template Importer")
+root.title("Wwise Template Builder")
 
 # Configure row and columns in root
 root.grid_rowconfigure(0, weight=1)
 root.grid_columnconfigure(0, weight=1)
 
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construct paths to the TCL files
+forest_light_tcl = os.path.join(script_dir, "tcl-styles", "forest-light.tcl")
+forest_dark_tcl = os.path.join(script_dir, "tcl-styles", "forest-dark.tcl")
+
 # Setup TTK theme styling
 style = ttk.Style(root)
-root.tk.call("source", "forest-light.tcl")
-root.tk.call("source", "forest-dark.tcl")
+root.tk.call("source", forest_light_tcl)
+root.tk.call("source", forest_dark_tcl)
 style.theme_use("forest-dark")
 
 # Create a Notebook (Tabbed interface)
