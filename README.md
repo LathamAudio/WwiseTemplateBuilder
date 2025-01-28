@@ -25,14 +25,14 @@ Instead you can point this tool at a template Wwise structure, a destination loc
 - **Create Template in Wwise**: Create as many templates as needed directly in Wwise
 
 ## Installation
-1. Download the WwiseTemplateBuilder_v01 release at https://github.com/LathamAudio/WwiseTemplateBuilder/releases/tag/v0.1
-2. Unzip 'Add-Ons' folder to Wwise project folder
-3. Install Python 3.8+ -  Download at https://www.python.org/downloads/
-4. Ensure WAAPI is enabled in Wwise (should be setup by default):
+1. Install Python 3.8+ -  Download at https://www.python.org/downloads/
+2. Download the WwiseTemplateBuilder_v01 release at https://github.com/LathamAudio/WwiseTemplateBuilder/releases/tag/v0.1
+3. Unzip 'Add-Ons' folder to Wwise project folder
+4. Run **'Add-Ons\Scripts\WwiseTemplateBuilder\InstallDependencies.bat'** to install python dependencies like pss-pywaapi
+5. Ensure WAAPI is enabled in Wwise (should be setup by default):
 	1. Open Wwise.
 	2. Go to **User Preferences**
 	3. Enable **WAAPI** and confirm the WAMP port is set to 8080 (can be changed in the script on line 608 in main.pyw)
-5. Run **'Add-Ons\Scripts\WwiseTemplateBuilder\InstallDependencies.bat'** to install python dependencies like pss-pywaapi
 
 ## Usage
 1. **Run the Script**:
