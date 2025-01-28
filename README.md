@@ -25,7 +25,7 @@ Instead you can point this tool at a template Wwise structure, a destination loc
 - **Create Template in Wwise**: Create as many templates as needed directly in Wwise
 
 ## Installation
-1. Download the latest WwiseTemplateBuilder release
+1. Download the WwiseTemplateBuilder_v01 release
 2. Unzip 'Add-Ons' folder to Wwise project folder
 3. Install Python 3.8+ -  Download at https://www.python.org/downloads/
 4. Ensure WAAPI is enabled in Wwise (should be setup by default):
