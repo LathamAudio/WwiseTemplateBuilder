@@ -92,4 +92,4 @@ This project is licensed under the MIT License
 ## Contact
 	email: chris@lathamaudio.com
 	linkedin: http://www.linkedin.com/in/lathamaudio
-	twitter: @latham_audio
+	bluesky: @lathamaudio.com
