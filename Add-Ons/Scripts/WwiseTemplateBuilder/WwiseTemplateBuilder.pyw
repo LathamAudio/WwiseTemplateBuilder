@@ -7,6 +7,7 @@ import os                               # OS paths
 import asyncio                          # Asyncio                        
 import sys                              # System
 import re                               # Regex
+import time                             # Time
 import pss_pywaapi                      # PSS_PYWAAPI
 from waapi import WaapiClient
 
@@ -21,6 +22,7 @@ source_location = 0             # Path to source template
 source_object = 0               # Source template object
 destination_location = 0        # Path to destination location
 destination_object = 0          # Destination parent object
+copied_object = 0               # Copied object
 event_source_location = 0             # Path to source template
 event_source_object = 0               # Source template object
 event_destination_location = 0        # Path to destination location
@@ -134,7 +136,12 @@ def OnPreviewTemplateButtonClick():
 
 # On Generate Template button click
 def OnGenerateTemplateButtonClick():
-    # Cnce all files in this dir are added, set the import file list to be imported
+    global copied_object
+
+    # Populate the treeview and match .wav files with leaf nodes
+    OnPreviewTemplateButtonClick()
+
+    # Once all files in this dir are added, set the import file list to be imported
     importArgs = {
         "importOperation": "replaceExisting",
         "autoAddToSourceControl": True,
@@ -145,17 +152,37 @@ def OnGenerateTemplateButtonClick():
 
     # If there is a destination provided then copy the source Wwise structure to the Destation location
     if destination_objectPath.get():  
-        result = pss_pywaapi.copyWwiseObject(source_location, destination_location, conflict='replace')
+        copied_object = pss_pywaapi.copyWwiseObject(source_location, destination_location, conflict='rename')
 
     # If a template name is provided then replace the TEMPLATE string in copied structure
     if template_name_object_path.get():
         ReplaceTemplateInDestinationStructure(template_name_object_path.get())
 
+    # wait for half a second to start checking if Wwise is ready
+    time.sleep(0.5) 
+
+    # Wait for Wwise to be ready again
+    while True:
+        try:
+            # Try a simple WAAPI request to check if Wwise is responding
+            response = pss_pywaapi.call("ak.wwise.core.getProjectInfo", {})
+            
+            # If response is valid, Wwise is back
+            if response:  
+                break
+        except Exception:
+            # Ignore errors and keep checking
+            pass 
+        
+        # wait for half a second before retrying
+        time.sleep(0.5)  
+
+    # Wait a one second before importing audio files
+    time.sleep(1)  
+    
     # If the assets directory has been provided then import audio into Wwise
     if assets_directory:
         res = pss_pywaapi.importAudioFilesBatched(importArgs, 1000)
-    
-    print("DONE :D")
 
 
 
@@ -288,33 +315,84 @@ def AppendImportFileList(audioFile, audioFileName, objectPath, objecteType, rela
     })
 
 
-    # Replate the TEMPLATE string with the provided template name
+# Replate the TEMPLATE string with the provided template name
 def ReplaceTemplateInDestinationStructure(template_name):
+    global copied_object
+
+    # Get the Wwise project info
+    project_info = pss_pywaapi.call("ak.wwise.core.getProjectInfo", {})
+
+    # Extract the Wwise project root directory
+    wwise_directories = project_info.get("directories", "")
+    wwise_root = wwise_directories.get("root", "")
+    wwise_project_root = os.path.dirname(wwise_root)
+
     # Get the descendants of the destination path
     destination_structure = pss_pywaapi.getDescendantObjects(
-        destination_object["id"],  # Start from the selected object
+        copied_object["id"],  # Start from the selected object
         returnProperties=["name", "type", "id", "path", "parent"]  # Return properties including parent ID and type
     )
 
-    # Include the desitination object in the 0th position of the 'sounds' list
-    destination_structure.insert(0, destination_object)
+    # Get the details of the copied object
+    copiedobject_details = pss_pywaapi.call("ak.wwise.core.object.get", {
+        "from": {"id": [copied_object["id"]]},
+        "options": {"return": ["id", "name", "type", "path", "parent"]}
+    })
+
+    # Include the destination object in the 0th position of the list
+    destination_structure.insert(0, copiedobject_details.get("return")[0])
 
     # Iterate through the descendants and replace TEMPLATE with the actual template name
     for destination in destination_structure:
         # Replace TEMPLATE in the name
         new_name = re.sub(r'TEMPLATE', template_name, destination["name"])
         
-        # Only update if the name actually changess
+        # Only update if the name actually changes
         if new_name != destination["name"]:
-            # Set the updated name for the object in Wwise
-            args = {
-                "object": destination["id"],  # Use the ID of the object
-                "value": new_name
-            }
+            # If the destination is a WorkUnit, continue to the next iteration
+            if destination["type"] == "WorkUnit":
+                continue
 
-            # Call Waapi setName with arguments
-            pss_pywaapi.call("ak.wwise.core.object.setName", args) 
+            else:
+                # Other objects: Rename using WAAPI
+                args = {
+                    "object": destination["id"],  # Use the ID of the object
+                    "value": new_name
+                }
+                pss_pywaapi.call("ak.wwise.core.object.setName", args)  
 
+    # Save the project after modifications
+    pss_pywaapi.call("ak.wwise.core.project.save", {})
+
+    # Iterate through the descendants and replace TEMPLATE with the actual template name
+    for destination in destination_structure:
+        # Replace TEMPLATE in the name
+        new_name = re.sub(r'TEMPLATE', template_name, destination["name"])
+        
+        # Only update if the name actually changes
+        if new_name != destination["name"]:
+            # If the destination is a WorkUnit, rename the Work Unit file manually
+            if destination["type"] == "WorkUnit":
+                # Get the actor mixer path 
+                actor_mixer_path = os.path.join(wwise_project_root, "Actor-Mixer Hierarchy")
+                
+                # Get the workunit path
+                workunit_path = os.path.join(actor_mixer_path, destination["name"])
+
+                # Remove any trailing underscore and digits (e.g., _01, _99) at the end of the name
+                temp_workunit_path = re.sub(r'_\d+$', '', workunit_path)
+
+                # Add the .wwu extension to the workunit path
+                workunit_path = os.path.join(workunit_path  + ".wwu")
+
+                # Create a new workunit path replacing the template string
+                new_workunit_path = os.path.join(wwise_project_root, temp_workunit_path.replace("TEMPLATE", template_name).lstrip("\\/")+ ".wwu")
+                
+                # If the workunit path exists then rename the workunit file
+                if os.path.exists(workunit_path):
+                    os.rename(workunit_path, new_workunit_path)
+                else:
+                    print(f"Work Unit file not found: {workunit_path}")
 
 # ___EVENT FUNCTIONS_________________________________________________________________________________________________________
 # On Source Event Template Button Click
@@ -431,8 +509,6 @@ def OnGenerateEventTemplateButtonClick():
     # If a template name is provided then replace the TEMPLATE string in copied structure
     if  event_template_name_entry.get():
         ReplaceTemplateInDestinationEventStructure(event_template_name_entry.get())
-    
-    print("DONE :D")
 
 
 
@@ -489,12 +565,9 @@ def ReplaceTemplateInDestinationEventStructure(template_name):
 
                 # Ensure result is valid and contains "return" before iterating
                 for index, item in enumerate(return_items):
-                    # Debugging output to monitor each item
-                    # print(f"Iteration {index}, item: {item}") 
 
                     # If item is None or not a dictionary then skip
                     if item is None or not isinstance(item, dict):
-                        print(f"Skipping unexpected item at index {index}: {item}")
                         # Skip any items that aren't dictionaries
                         continue  
 
@@ -503,10 +576,6 @@ def ReplaceTemplateInDestinationEventStructure(template_name):
 
                     # If target_id is a dictionary and contains "id"
                     if isinstance(target_id, dict) and "id" in target_id:
-
-                        # # Debugging output for the ID only
-                        # print("target_id:", target_id["id"])  
-                        # print("target_id:", target_id)
 
                         # Get the target_id name
                         target_name = target_id.get("name", None)
@@ -530,15 +599,12 @@ def ReplaceTemplateInDestinationEventStructure(template_name):
                                     value=target_descendant["id"],
                                     platform=None
                                 )
-                                # print(f"Updated target ID to {target_descendant['id']} for {event_destination['id']}")
                             else:
                                 print(f"No matching descendant found for modified target name: {modified_target_name}")
                         else:
                             print("Target name not retrieved or no modification needed.")
                     else:
                         print(f"No @Target found for object: {event_destination['name']}")
-                # else:
-                #     print("Error: 'result' is None or does not contain 'return' key.")
             except Exception as e:
                 print(f"Error retrieving ActionType and Target for {event_destination['name']}: {e}")
 
@@ -600,9 +666,9 @@ def BuildTreeViewStructure(tree, source_object, source_structure):
 
 # ___MAIN_________________________________________________________________________________________________________
 
-log_file = os.path.join(os.path.dirname(__file__), "debug.log")
-sys.stdout = open(log_file, "w")
-sys.stderr = sys.stdout
+# log_file = os.path.join(os.path.dirname(__file__), "debug.log")
+# sys.stdout = open(log_file, "w")
+# sys.stderr = sys.stdout
 
 # Connect to Wwise API
 result = pss_pywaapi.connect(8080)
