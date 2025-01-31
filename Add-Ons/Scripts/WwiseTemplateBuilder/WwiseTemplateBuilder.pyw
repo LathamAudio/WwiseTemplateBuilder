@@ -666,16 +666,12 @@ def BuildTreeViewStructure(tree, source_object, source_structure):
 
 # ___MAIN_________________________________________________________________________________________________________
 
-# log_file = os.path.join(os.path.dirname(__file__), "debug.log")
-# sys.stdout = open(log_file, "w")
-# sys.stderr = sys.stdout
+log_file = os.path.join(os.path.dirname(__file__), "debug.log")
+sys.stdout = open(log_file, "w")
+sys.stderr = sys.stdout
 
 # Connect to Wwise API
 result = pss_pywaapi.connect(8080)
-
-# # Connect (default URL)
-# client = WaapiClient()
-
 
 
 #___GUI setup________________________________________________________________________
