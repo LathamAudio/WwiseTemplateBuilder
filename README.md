@@ -4,6 +4,7 @@
 </p>
 
 **OVERVIEW VIDEO** - https://www.youtube.com/watch?v=1_J7osMAB8Q
+
 **INSTALLATION VIDEO** - https://www.youtube.com/watch?v=n6-XA2kPW9M
 
 **WwiseTemplateBuilder** is a command add-on tool written in Python for importing audio into a pre-existing Wwise templates for easy and consistent setup of actor-mixer structures and events. The tool allows users to streamline the process of setting up complex Wwise project structures, making it easier to manage consistent audio implementation across large-scale Wwise projects.
