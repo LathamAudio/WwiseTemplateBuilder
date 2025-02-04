@@ -1,7 +1,10 @@
 # WwiseTemplateBuilder
 <p align="center">
-  <img src="https://github.com/LathamAudio/WwiseTemplateBuilder/blob/main/screenshots/WwiseTemplateBuilder.gif"/>
+  <img src="https://github.com/LathamAudio/WwiseTemplateBuilder/blob/main/screenshots/07-WTBScreenshot.png"/>
 </p>
+
+**OVERVIEW VIDEO** - https://www.youtube.com/watch?v=1_J7osMAB8Q
+**INSTALLATION VIDEO** - https://www.youtube.com/watch?v=n6-XA2kPW9M
 
 **WwiseTemplateBuilder** is a command add-on tool written in Python for importing audio into a pre-existing Wwise templates for easy and consistent setup of actor-mixer structures and events. The tool allows users to streamline the process of setting up complex Wwise project structures, making it easier to manage consistent audio implementation across large-scale Wwise projects.
 
@@ -49,23 +52,24 @@ Instead you can point this tool at a template Wwise structure, a destination loc
 4. Select WAV assets
 	- Press the 'Select Folder' button in the WwiseTemplateBuilder tool and select the folder of audio assets to import in to the template actor-mixer structure
 
-5. Set the `TEMPLATE` string
-	- In the 'Find & Replace `TEMPLATE` string' field type the string that will replace `TEMPLATE` in the template name
-	- The application will automatically replace instances of `TEMPLATE` in the template names and paths with specified names, adapting them to your project structure.
+5. Set the Find & Replace strings
+	- In the 'Find' field type the string that will be replaced in the template name
+	- In the 'Replace' field type the string that will replace the find string in the template name
+	- The application will automatically replace instances of find string in the template names and paths with the replace string, adapting them to your project structure.
 
 6. Preview template
 	- Pressing the 'Preview Template' button populates the preview pane below with a preview of how the template will look in Wwise
 	- This will show a preview of the actor-mixer structure will the new names and placement of audio assets in the structure
 
 7. Generate Template
-	- Pressing the 'Generate Template' button will create the new actor-mixer structure in the destination location that matches the original source structure. The string `TEMPLATE` will be replaces with the provided replacement string. The audio assets are imported into Wwise and placed into the matching actor-mixer structure locations.
+	- Pressing the 'Generate Template' button will create the new actor-mixer structure in the destination location that matches the original source structure. The find string will be replaces with the provided replace string. The audio assets are imported into Wwise and placed into the matching actor-mixer structure locations.
 
 8. **Event Template**:
 	- Switch to the 'Events' tab to use event templates for that reference the actor-mixer templates
 	- Select the location of the source event template in Wwise and press 'Select Source'
 	- Select the location of the destination event template in Wwise and press 'Select Destination'
 	- Select the destination location of target actor-mixer in Wwise and press 'Select Actor-Mixer', this will set the destination actor-mixer as the target of the event actions instead of the original template to replace the defaults set
-	- Set the same `TEMPLATE` string to replace in the events and actions
+	- Set the same find & replace strings to replace in the events and actions
 	- Pressing 'Preview Template' with show a preview of the event template before generation
 	- Pressing 'Generate Template' will create the resulting event structure in Wwise, replacing any instance of the `TEMPLATE` string found, and re-targeting event actions to the destination template actor-mixer structure
 
