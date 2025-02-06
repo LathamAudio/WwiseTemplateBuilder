@@ -157,7 +157,7 @@ def OnGenerateTemplateButtonClick():
     if destination_objectPath.get():  
         copied_object = pss_pywaapi.copyWwiseObject(source_location, destination_location, conflict='rename')
 
-    # If a template name is provided then replace the TEMPLATE string in copied structure
+    # If a template name is provided then replace the find string in copied structure
     if template_replace_string_object_path.get():
         ReplaceFindStringInDestinationStructure(template_replace_string_object_path.get())
 
@@ -238,7 +238,7 @@ def MatchWAVFilesWithLeafNodes(treeview, assets_directory):
                     # Initialize modified_leaf_name
                     modified_leaf_name = ""
 
-                    # Replace "TEMPLATE" string with the actual template name
+                    # Replace find string with the actual template name
                     if template_replace_string_object_path.get():
                         modified_leaf_name = leaf_name_cleaned.replace(template_find_string_object_path.get(), template_name)
 
@@ -265,7 +265,7 @@ def MatchWAVFilesWithLeafNodes(treeview, assets_directory):
                         # Replate the source template path with the destination path
                         object_path = object_path.replace(template_path, destination_path)
                         
-                        # If there is a template name available then replace the TEMPLATE string with the template name
+                        # If there is a template name available then replace the find string with the template name
                         if template_replace_string_object_path.get():
                             object_path = object_path.replace(template_find_string_object_path.get(), template_name)
                         
@@ -410,6 +410,22 @@ def ReplaceFindStringInDestinationStructure(template_name):
                 
                 # If the workunit path exists then rename the workunit file
                 if os.path.exists(workunit_path):
+                    # try:
+                    #     # Check if source control is enabled on the file at the destination path
+                    #     args = {
+                    #         "files": [destination["path"]],
+                    #     }
+                    #     result = pss_pywaapi.call("ak.wwise.core.sourceControl.getStatus", args)
+                        
+                    #     # If the response is a valid list, source control is enabled
+                    #     if isinstance(result, list):  
+                    #         pss_pywaapi.checkoutWorkUnit(destination["id"])
+                    
+                    # except Exception:
+                    #     # If the command fails, source control is likely not enabled, move along
+                    #     pass  
+
+                    # Rename the workunit file    
                     os.rename(workunit_path, new_workunit_path)
                 else:
                     print(f"Work Unit file not found: {workunit_path}")
@@ -494,6 +510,27 @@ def OnPreviewEventTemplateButtonClick():
     for item in events_tree_view.get_children():
         events_tree_view.delete(item)
 
+    # Get the path of the event source field
+    event_source_path_ref = event_source_path.get()
+
+    try:
+        # Get the object info for the event at the event source path
+        args = {
+            "from": {"path": [event_source_path_ref]},
+            "options": {"return": ["name", "type", "id", "path", "parent"]}
+        }
+        result = pss_pywaapi.call("ak.wwise.core.object.get", args)
+
+        # If the result is valid
+        if result and "return" in result and result["return"]:
+            # Set this event to  the event source object
+            event_source_object = result["return"][0]
+            # print(f"Found Event: {event_source_object['name']} (ID: {event_source_object['id']})")
+        else:
+            print(f"Event not found at path: {event_source_path_ref}")
+    except Exception as e:
+        print(f"Error retrieving Event ID: {e}")
+
     # Get the descendants of the selected object
     event_source_structure = pss_pywaapi.getDescendantObjects(
         event_source_object["id"],  # Start from the selected object
@@ -508,10 +545,10 @@ def OnPreviewEventTemplateButtonClick():
     
     # for each event source in the event source structure
     for event_source in event_source_structure:
-        # Replace TEMPLATE string in the name
+        # Replace find string in the name
         event_source["name"] = re.sub(event_find_string.get(), template_replacement, event_source["name"])
 
-        # Replace TEMPLATE string in the path
+        # Replace find string in the path
         event_source["path"] = re.sub(event_find_string.get(), template_replacement, event_source["path"])
 
     # Populate the event treeview
@@ -526,7 +563,7 @@ def OnGenerateEventTemplateButtonClick():
     if event_destination_path.get():  
         copied_event_object = pss_pywaapi.copyWwiseObject(event_source_location, event_destination_location, conflict='rename')
 
-    # If a template name is provided then replace the TEMPLATE string in copied structure
+    # If a template name is provided then replace the find string in copied structure
     if  event_replace_string.get():
         ReplaceTemplateInDestinationEventStructure(event_replace_string.get())
 
@@ -568,7 +605,7 @@ def ReplaceTemplateInDestinationEventStructure(template_name):
 
     # Iterate through the descendants of the event destination struction 
     for event_destination in event_destination_structure:
-        # Replace any instance of the string TEMPLATE in the event destination name
+        # Replace any instance of the find string in the event destination name
         new_name = re.sub(event_find_string.get(), template_name, event_destination["name"])
 
         # Remove any trailing underscore and digits (e.g., _01, _99) at the end of the name
@@ -620,7 +657,7 @@ def ReplaceTemplateInDestinationEventStructure(template_name):
                         # If there is a target_name
                         if target_name:
 
-                            # Find any instance of the string TEMPLATE with the event template name
+                            # Find any instance of the find string with the event template name
                             modified_target_name = target_name.replace(event_find_string.get(), event_replace_string.get())
                             
                             # For each descendant of the event target structure check if the descendants name is equal to the modified_target_name
@@ -657,7 +694,7 @@ def BuildTreeViewStructure(tree, source_object, source_structure):
     # Set the source objects name to the rootname
     rootname = source_object["name"]
 
-    # If there is a template name available the replate the TEMPLATE string with the template name
+    # If there is a template name available the replace the find string with the template name
     if template_find_string_object_path.get() and template_replace_string_object_path.get():
         rootname = rootname.replace(template_find_string_object_path.get(), template_replace_string_object_path.get())
 
@@ -679,7 +716,7 @@ def BuildTreeViewStructure(tree, source_object, source_structure):
         if id == root_id:
             continue    
         
-        # If there is a template name provided then replace the TEMPLATE string with the template name
+        # If there is a template name provided then replace the find string with the template name
         if template_find_string_object_path.get() and template_replace_string_object_path.get():
             name = name.replace(template_find_string_object_path.get(), template_replace_string_object_path.get())
         
