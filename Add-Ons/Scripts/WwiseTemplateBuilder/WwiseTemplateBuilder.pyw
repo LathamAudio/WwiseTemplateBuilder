@@ -408,27 +408,30 @@ def ReplaceFindStringInDestinationStructure(template_name):
                 # Create a new workunit path replacing the template string
                 new_workunit_path = os.path.join(wwise_project_root, temp_workunit_path.replace(template_find_string_object_path.get(), template_name).lstrip("\\/")+ ".wwu")
                 
-                # If the workunit path exists then rename the workunit file
-                if os.path.exists(workunit_path):
-                    # try:
-                    #     # Check if source control is enabled on the file at the destination path
-                    #     args = {
-                    #         "files": [destination["path"]],
-                    #     }
-                    #     result = pss_pywaapi.call("ak.wwise.core.sourceControl.getStatus", args)
-                        
-                    #     # If the response is a valid list, source control is enabled
-                    #     if isinstance(result, list):  
-                    #         pss_pywaapi.checkoutWorkUnit(destination["id"])
-                    
-                    # except Exception:
-                    #     # If the command fails, source control is likely not enabled, move along
-                    #     pass  
+                os.rename(workunit_path, new_workunit_path)
+                
+                # # If the workunit path exists then rename the workunit file
+                # if os.path.exists(new_workunit_path):
+                #     try:                        
+                #         # Check if the file is under source control
+                #         result = pss_pywaapi.call("ak.wwise.core.sourceControl.getStatus", {"files": [new_workunit_path]})
 
-                    # Rename the workunit file    
-                    os.rename(workunit_path, new_workunit_path)
-                else:
-                    print(f"Work Unit file not found: {workunit_path}")
+                #         file_status = result["result"][0]["status"]
+
+                #         # If the file is "local only", add it to source control
+                #         if file_status == "local only":
+                #             args = {
+                #                 "files": [new_workunit_path],
+                #             }
+                #             result = pss_pywaapi.call("ak.wwise.core.sourceControl.add", args)
+
+                #     except Exception:
+                #         # If the command fails, source control is likely not enabled, move along
+                #         pass  
+
+                #     # Rename the workunit file    
+                # else:
+                #     print(f"Work Unit file not found: {workunit_path}")
 
 
 # ___EVENT FUNCTIONS_________________________________________________________________________________________________________
